@@ -1,5 +1,6 @@
 const createElements= (arr) => {
-    const htmlElement = arr.map(el)=>`<span class="btn">${el}</span>`
+    const htmlElement = arr.map((el) => `<span class="btn">${el}</span>`)
+    return htmlElement.join(" ");
 }
 
 
@@ -14,6 +15,7 @@ const removeActive = (id) => {
     lessonButtons.forEach(btn => btn.classList.remove('active'));
 }
 const loadLevelWord = (id) => {
+    manageSpinner(true)
     fetch(`https://openapi.programming-hero.com/api/level/${id}`)
     .then((res) => res.json())
     .then((data) => { 
@@ -47,9 +49,7 @@ const displayLoadWordDetail=(word)=>{
         </div>
         <div>
           <h2 class="font-bold">synonyms</h2>
-          <span class="btn">syn1</span>
-          <span class="btn">syn1</span>
-          <span class="btn">syn1</span>
+          <div>${createElements(word.synonyms)}</div>
         </div>`
        document.getElementById("word_modal").showModal();
 
@@ -63,13 +63,13 @@ const displayLevelWords = (words) => {
         <p class="text-xl font-medium text-gray-400 font-bangla">এই Lesson এ এখনো কোন Vocabulary যুক্ত করা হয়নি।</p>
         <h2 class="font-semibold text-4xl font-bangla">নেক্সট Lesson এ যান</h2>
       </div>`;
-
+manageSpinner(false)
         return;
     }
     words.forEach(word => {
         const card= document.createElement('div');
         card.innerHTML = `
-        <div class="bg-white rounded-xl shadow-sm text-center py-10 px-5 space-y-4">
+        <div class="bg-white rounded-xl shadow-sm text-center py-15 px-5 space-y-4">
         <h2 class="font-bold text-2xl ">${word.word ? word.word:"word not found"}</h2>
         <p class="font-semibold ">meaning / pronunciation</p>
         <div class="font-medium text-2xl font-bangla">${word.meaning? word.meaning:"meaning not found"} / ${word.pronunciation? word.pronunciation:"pronunciation not found"}</div>
@@ -82,9 +82,17 @@ const displayLevelWords = (words) => {
          `
          wordContainer.appendChild(card);
 })
-
+manageSpinner(false);
 }
-
+const manageSpinner = (status)=> {
+  if(status == true){
+    document.getElementById("spinner").classList.remove("hidden")
+    document.getElementById("word-container").classList.add("hidden")
+  }else{
+    document.getElementById("word-container").classList.remove("hidden")
+    document.getElementById("spinner").classList.add("hidden")
+  }
+}
 
 
 

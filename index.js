@@ -3,7 +3,11 @@ const createElements= (arr) => {
     return htmlElement.join(" ");
 }
 
-
+function pronounceWord(word) {
+  const utterance = new SpeechSynthesisUtterance(word);
+  utterance.lang = "en-EN"; // English
+  window.speechSynthesis.speak(utterance);
+}
 
 const loadLessons = ()=> {
     fetch( "https://openapi.programming-hero.com/api/levels/all")
@@ -75,7 +79,7 @@ manageSpinner(false)
         <div class="font-medium text-2xl font-bangla">${word.meaning? word.meaning:"meaning not found"} / ${word.pronunciation? word.pronunciation:"pronunciation not found"}</div>
         <div class="flex justify-between items-center">
           <button onclick="loadWordDetail(${word.id})" class="btn bg-[#1a91ff11] hover:bg-[#1a91ff80]"><i class="fa-solid fa-circle-info"></i></button>
-          <button class="btn bg-[#1a91ff11] hover:bg-[#1a91ff80]" ><i class="fa-solid fa-volume-high"></i></button>
+          <button onclick="pronounceWord('${word.word}')"" class="btn bg-[#1a91ff11] hover:bg-[#1a91ff80]" ><i class="fa-solid fa-volume-high"></i></button>
         </div>
 
       </div>
@@ -118,3 +122,17 @@ lessons.forEach((lesson) => {
 
 }
 loadLessons();
+
+document.getElementById("btn-search").addEventListener("click", () => {
+    removeActive()
+    const input= document.getElementById("input-search")
+    const searchValue = input.value.trim().toLowerCase();
+    fetch("https://openapi.programming-hero.com/api/words/all")
+    .then(res=>res.json())
+    .then(data=>{
+        const allWords = data.data;
+        const filterWords = allWords.filter(word=>word.word.toLowerCase().includes(searchValue))
+        displayLevelWords(filterWords)
+    })
+
+})
